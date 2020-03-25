@@ -7,6 +7,8 @@ dependencies:
   - ipykernel
   - ipython
   - jupyter
+  - jupytext
+  - ipykernel
   - xarray
   - panel
   - pip
@@ -14,7 +16,7 @@ dependencies:
   - netCDF4  #required by xarray but not automatically installed
 
 
-prefix: /global/homes/t/twhilton/.conda/envs/yatir_viz_minimal
+# prefix: /global/homes/t/twhilton/.conda/envs/yatir_viz_minimal
 
 
   # - cartopy=0.17.0=py37h4331854_1007
