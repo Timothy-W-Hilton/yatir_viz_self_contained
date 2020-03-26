@@ -40,9 +40,8 @@ def merge_yatir_fluxes_landuse(fname_ctl='ctl_run_d03_diag_latest.nc',
                                fname_yatir='yatir_run_d03_diag_latest.nc'):
     """merge WRF fluxes and landuse into single xarray dataset
     """
-    cscratch_path = os.getcwd()
-    ctlday = WRF_daily_daylight_avg(os.path.join(cscratch_path, fname_ctl))
-    ytrday = WRF_daily_daylight_avg(os.path.join(cscratch_path, fname_yatir))
+    ctlday = WRF_daily_daylight_avg(fname_ctl)
+    ytrday = WRF_daily_daylight_avg(fname_yatir)
     ctlday, ytrday = (this_dataset.assign(
         {'height_agl_stag': this_dataset['zstag'] - this_dataset['ter']}
     )
