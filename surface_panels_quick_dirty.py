@@ -25,7 +25,7 @@ def three_panel_quadmesh_compare_vertical_var(ds, varname, cmap='RdBu'):
 
     """
 
-    hour_select = pn.widgets.IntSlider(start=0, end=2, value=0, name='Hour',
+    hour_select = pn.widgets.IntSlider(start=0, end=23, value=0, name='Hour',
                                        orientation='vertical',
                                        direction='rtl')
     var_varies_vertically = len(gt.get_vdim(ds, varname)) > 0
@@ -151,7 +151,7 @@ def three_panel_quadmesh_compare_surface_var(ds, varname, cmap='RdBu'):
 
     """
 
-    hour_select = pn.widgets.IntSlider(start=0, end=2, value=0, name='Hour',
+    hour_select = pn.widgets.IntSlider(start=0, end=23, value=0, name='Hour',
                                        orientation='vertical',
                                        direction='rtl')
     z_select = None  # this is a surface variable

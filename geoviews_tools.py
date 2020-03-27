@@ -2,7 +2,7 @@
 # 23,Redwood Forest,Maroon,#800000
 
 import os
-import socket
+import requests
 import xarray as xr
 
 
@@ -35,6 +35,15 @@ def get_min_max(ds, varname, hour, zlev):
     # print('min, max:', vmin, vmax)
     return((vmin, vmax))
 
+
+def xfer_data_to_cwd(data_url):
+    """move a remote data file to the current directory
+    """
+    r = requests.get(data_url, stream=True)
+    filename = os.path.basename(data_url)
+    with open(filename, 'wb') as fd:
+        for chunk in r.iter_content(chunk_size=128):
+            fd.write(chunk)
 
 def merge_yatir_fluxes_landuse(fname_ctl='ctl_run_d03_diag_latest.nc',
                                fname_yatir='yatir_run_d03_diag_latest.nc'):
@@ -79,6 +88,9 @@ def yatir_WRF_to_xarray(fname):
     returns an xarray suitable for plotting with
     [GeoViews](http://geoviews.org/user_guide/)
     """
+    if 'http' in fname:
+        xfer_data_to_cwd(fname)
+        fname = os.path.basename(fname)
     ds = xr.open_dataset(fname)
     for dim in ['XLAT', 'XLONG']:
         ds[dim] = ds[dim].isel(Time=0)
