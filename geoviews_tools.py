@@ -51,6 +51,9 @@ def merge_yatir_fluxes_landuse(fname_ctl='ctl_run_d03_diag_latest.nc',
     """
     ctlday = yatir_WRF_to_xarray(fname_ctl)
     ytrday = yatir_WRF_to_xarray(fname_yatir)
+    for dim in ['XLAT', 'XLONG']:
+        ctlday = ctlday.assign_coords({dim: ctlday[dim]})
+        ytrday = ytrday.assign_coords({dim: ctlday[dim]})
     ds_diff =  (ctlday - ytrday)  #.assign_coords({'WRFrun': 'control - Yatir'})
 
     return(ctlday, ytrday, ds_diff)
