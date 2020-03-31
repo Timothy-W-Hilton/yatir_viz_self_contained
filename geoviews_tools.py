@@ -49,13 +49,8 @@ def merge_yatir_fluxes_landuse(fname_ctl='ctl_run_d03_diag_latest.nc',
                                fname_yatir='yatir_run_d03_diag_latest.nc'):
     """merge WRF fluxes and landuse into single xarray dataset
     """
-    ctlday = WRF_daily_daylight_avg(fname_ctl)
-    ytrday = WRF_daily_daylight_avg(fname_yatir)
-    ctlday, ytrday = (this_dataset.assign(
-        {'height_agl_stag': this_dataset['zstag'] - this_dataset['ter']}
-    )
-                      for (this_dataset, this_key) in
-                      zip((ctlday, ytrday), ('ctl', 'ytr')))
+    ctlday = yatir_WRF_to_xarray(fname_ctl)
+    ytrday = yatir_WRF_to_xarray(fname_yatir)
     ds_diff =  (ctlday - ytrday)  #.assign_coords({'WRFrun': 'control - Yatir'})
 
     return(ctlday, ytrday, ds_diff)
@@ -92,28 +87,7 @@ def yatir_WRF_to_xarray(fname):
         xfer_data_to_cwd(fname)
         fname = os.path.basename(fname)
     ds = xr.open_dataset(fname)
-    for dim in ['XLAT', 'XLONG']:
-        ds[dim] = ds[dim].isel(Time=0)
     return(ds)
-
-
-def WRF_daily_daylight_avg(fname):
-    """read Yatir forest WRF output to xarray containing daily means
-
-    returns an xarray suitable for plotting with
-    [GeoViews](http://geoviews.org/user_guide/)
-    """
-    ds = yatir_WRF_to_xarray(fname)
-    for this_var in ds.data_vars:
-        vertical_dim = [d for d in ds[this_var].dims if 'bottom_top' in d]
-        if any(vertical_dim):
-            if len(vertical_dim) > 1:
-                raise(ValueError('{} has more than one '
-                                 'vertical dimension'.format(this_var)))
-            else:
-                vertical_dim = vertical_dim[0]
-    ds_day_mean = ds.groupby('XTIME.hour').mean(keep_attrs=True)
-    return(ds_day_mean)
 
 
 def yatir_landuse_to_xarray():
