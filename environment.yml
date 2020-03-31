@@ -15,6 +15,7 @@ dependencies:
   - panel
   - pip
   - python=3.7
+  - requests
   - netCDF4  #required by xarray but not automatically installed
   - pip:
       - git+https://github.com/Timothy-W-Hilton/hvplot@title_format
