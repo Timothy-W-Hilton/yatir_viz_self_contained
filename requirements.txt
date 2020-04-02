@@ -1,0 +1,6 @@
+git+https://github.com/Timothy-W-Hilton/hvplot@title_format
+matplotlib
+xarray
+panel
+requests
+netCDF4  #required by xarray but not automatically installed
