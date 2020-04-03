@@ -138,7 +138,8 @@ def three_panel_quadmesh_compare_vertical_var(ds, varname, cmap='RdBu'):
                          pn.Row(get_quadmesh_control, get_quadmesh_yatir,
                                 hour_select, z_select),
                          pn.Row(get_quadmesh_diff, get_contour_agl))
-    return(the_plot)
+    the_plot_servable = the_plot.servable()
+    return(the_plot_servable)
 
 
 def three_panel_quadmesh_compare_surface_var(ds, varname, cmap='RdBu'):
@@ -214,4 +215,5 @@ def three_panel_quadmesh_compare_surface_var(ds, varname, cmap='RdBu'):
                          pn.Row(get_quadmesh_control, get_quadmesh_yatir,
                                 hour_select),
                          pn.Row(get_quadmesh_diff))
-    return(the_plot)
+    the_plot_servable = the_plot.servable()
+    return(the_plot_servable)
