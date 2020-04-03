@@ -45,8 +45,8 @@ volumetric water content from the dry run (not exceeding 100%, of
 course).  ''').servable()
 
 # farm out the plotting to worker processes because > 3 times out on Heroku.
-# q = Queue(connection=conn)
+q = Queue(connection=conn)
 
-# plot_W = q.enqueue(spqd.three_panel_quadmesh_compare_vertical_var, ds_diff, 'W', cmap='PRGn'
-# plot_theta = q.enqueue(spqd.three_panel_quadmesh_compare_vertical_var, ds_diff, 'LH', cmap='Reds')
-# plot_LH = q.enqueue(spqd.three_panel_quadmesh_compare_vertical_var, ds_diff, 'LH', cmap='Blues')
+plot_W = q.enqueue(spqd.three_panel_quadmesh_compare_vertical_var, ds_diff, 'W', cmap='PRGn'
+plot_theta = q.enqueue(spqd.three_panel_quadmesh_compare_vertical_var, ds_diff, 'LH', cmap='Reds')
+plot_LH = q.enqueue(spqd.three_panel_quadmesh_compare_vertical_var, ds_diff, 'LH', cmap='Blues')
