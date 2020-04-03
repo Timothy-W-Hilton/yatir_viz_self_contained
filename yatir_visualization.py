@@ -1,3 +1,8 @@
+import numpy as np
+import xarray as xr
+import hvplot.xarray
+import pandas as pd
+
 from rq import Queue
 from worker import conn
 import surface_panels_quick_dirty as spqd
