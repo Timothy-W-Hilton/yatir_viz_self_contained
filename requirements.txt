@@ -3,4 +3,5 @@ jupyter
 xarray
 panel
 requests
+matplotlib
 netCDF4  #required by xarray but not automatically installed
