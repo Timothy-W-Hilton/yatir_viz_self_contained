@@ -1,6 +1,6 @@
 import numpy as np
 import xarray as xr
-import hvplot.xarray
+import panel as pn
 import pandas as pd
 
 from rq import Queue
@@ -16,11 +16,16 @@ ctlday, ytrday, ctl_minus_ytr = gt.merge_yatir_fluxes_landuse(
     fname_yatir='./ytr_d03_VWCx2_postprocessed.nc')
 
 ds_diff = xr.concat([ctlday, ytrday, ctl_minus_ytr],
-                    dim=pd.Index(['yatir dry', 'yatir wet', 'Yatir dry - Yatir wet'], name='WRFrun'))
+                    dim=pd.Index(['yatir dry',
+                                  'yatir wet',
+                                  'Yatir dry - Yatir wet'],
+                                 name='WRFrun'))
 
 # make bottom_top_stag, bottom_top into coordinate variables
-ds_diff = ds_diff.assign_coords({'bottom_top_stag': np.arange(ds_diff.dims['bottom_top_stag'])})
-ds_diff = ds_diff.assign_coords({'bottom_top': np.arange(ds_diff.dims['bottom_top'])})
+ds_diff = ds_diff.assign_coords({'bottom_top_stag':
+                                 np.arange(ds_diff.dims['bottom_top_stag'])})
+ds_diff = ds_diff.assign_coords({'bottom_top':
+                                 np.arange(ds_diff.dims['bottom_top'])})
 # set 'long_name' attribute to match description
 ds_diff = gt.set_attributes_for_plotting(ds_diff)
 
