@@ -1,1 +1,1 @@
-web: panel serve --address="0.0.0.0" --port=$PORT yatir_visualization.ipynb --allow-websocket-origin=yatir-wetsoil-visualization.herokuapp.com
+web: panel serve --address="0.0.0.0" --port=$PORT yatir_visualization.ipynb --allow-websocket-origin=stormy-ridge-69316.herokuapp.com
