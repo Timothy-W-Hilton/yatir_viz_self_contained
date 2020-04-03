@@ -36,17 +36,21 @@ yatir_idx = 21  # list(ds_diff['PFT'].values).index('Yatir')
 pn.pane.Markdown('''# Yatir Parameterizaton WRF results
 
 A collection of plots showing WRF-simulated surface energy and carbon
-fluxes for two different simulations of Yatir Forest in Israel.  Both
-WRF runs set a 15-km radius surrounding Yatir Forest to a lower albedo
-and higher surface roughness length relative to an 'out of the box'
-WRF run (in which the area is occupied by MODIS-derived shrubland and
-desert).  The 'wet' run 'irrigates' the forest by doubling the
-volumetric water content from the dry run (not exceeding 100%, of
-course).  ''').servable()
+fluxes for two different simulations of [Yatir
+Forest](https://www.weizmann.ac.il/EPS/Yakir/research-activities/field-research/yatir-forest-location-and-background)
+in Israel.  Both WRF runs set a 15-km radius surrounding Yatir Forest
+to a lower albedo and higher surface roughness length relative to an
+'out of the box' WRF run (in which the area is occupied by
+MODIS-derived shrubland and desert).  The 'wet' run 'irrigates' the
+forest by doubling the volumetric water content from the dry run (not
+exceeding 100%, of course).  ''').servable()
 
 # farm out the plotting to worker processes because > 3 times out on Heroku.
 q = Queue(connection=conn)
 
-plot_W = q.enqueue(spqd.three_panel_quadmesh_compare_vertical_var, ds_diff, 'W', cmap='PRGn'
-plot_theta = q.enqueue(spqd.three_panel_quadmesh_compare_vertical_var, ds_diff, 'LH', cmap='Reds')
-plot_LH = q.enqueue(spqd.three_panel_quadmesh_compare_vertical_var, ds_diff, 'LH', cmap='Blues')
+plot_W = q.enqueue(spqd.three_panel_quadmesh_compare_vertical_var,
+                   ds_diff, 'W', cmap='PRGn')
+plot_theta = q.enqueue(spqd.three_panel_quadmesh_compare_vertical_var,
+                       ds_diff, 'LH', cmap='Reds')
+plot_LH = q.enqueue(spqd.three_panel_quadmesh_compare_vertical_var,
+                    ds_diff, 'LH', cmap='Blues')
