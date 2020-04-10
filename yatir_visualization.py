@@ -1,37 +1,11 @@
-import numpy as np
-import xarray as xr
 import panel as pn
-import pandas as pd
+
+import time
+import sys
 
 from rq import Queue
 from worker import conn
 import surface_panels_quick_dirty as spqd
-import geoviews_tools as gt
-
-# gather data
-
-# use local data
-ctlday, ytrday, ctl_minus_ytr = gt.merge_yatir_fluxes_landuse(
-    fname_ctl='./ctl_d03_VWCx2_postprocessed.nc',
-    fname_yatir='./ytr_d03_VWCx2_postprocessed.nc')
-
-ds_diff = xr.concat([ctlday, ytrday, ctl_minus_ytr],
-                    dim=pd.Index(['yatir dry',
-                                  'yatir wet',
-                                  'Yatir dry - Yatir wet'],
-                                 name='WRFrun'))
-
-# make bottom_top_stag, bottom_top into coordinate variables
-ds_diff = ds_diff.assign_coords({'bottom_top_stag':
-                                 np.arange(ds_diff.dims['bottom_top_stag'])})
-ds_diff = ds_diff.assign_coords({'bottom_top':
-                                 np.arange(ds_diff.dims['bottom_top'])})
-# set 'long_name' attribute to match description
-ds_diff = gt.set_attributes_for_plotting(ds_diff)
-
-yatir_idx = 21  # list(ds_diff['PFT'].values).index('Yatir')
-#ds_diff = ds_diff.assign(yatir_mask=ds_diff.sel(WRFrun='yatir dry')['LU_INDEX'] == yatir_idx)
-
 
 pn.pane.Markdown('''# Yatir Parameterizaton WRF results
 
@@ -48,9 +22,34 @@ exceeding 100%, of course).  ''').servable()
 # farm out the plotting to worker processes because > 3 times out on Heroku.
 q = Queue(connection=conn)
 
-plot_W = q.enqueue(spqd.three_panel_quadmesh_compare_vertical_var,
-                   ds_diff, 'W', cmap='PRGn')
-plot_theta = q.enqueue(spqd.three_panel_quadmesh_compare_vertical_var,
-                       ds_diff, 'LH', cmap='Reds')
-plot_LH = q.enqueue(spqd.three_panel_quadmesh_compare_vertical_var,
-                    ds_diff, 'LH', cmap='Blues')
+# plot_W = q.enqueue(spqd.three_panel_quadmesh_compare_vertical_var,
+#                    args=('W', 'PRGn'),
+#                    job_id='W_plot_job')
+# plot_theta = q.enqueue(spqd.three_panel_quadmesh_compare_surface_var,
+#                        args=('HFX', 'Reds'),
+#                        job_id='HFX_plot_job')
+plot_LH = q.enqueue(spqd.three_panel_quadmesh_compare_surface_var,
+                    args=('LH', 'Blues'),
+                    job_id='LH_plot_job')
+
+result_lh = plot_LH.fetch('LH_plot_job', connection=conn).result
+while result_lh is None:
+    sys.stdout.write('LH not yet finished')
+    sys.stdout.flush()
+    time.sleep(2)
+    result_lh = plot_LH.fetch('LH_plot_job', connection=conn).result
+
+nprint = 0
+while nprint < 5:
+    sys.stdout.write('LH job type ' + str(type(result_lh)))
+    sys.stdout.write('\n')
+    sys.stdout.write('LH job ~' + str(result_lh) + '~')
+    sys.stdout.write('\n')
+    sys.stdout.flush()
+    nprint = nprint + 1
+
+time.sleep(10)
+
+pn.pane.Markdown('''#After the delay
+print this stuff after the delay
+''').servable()

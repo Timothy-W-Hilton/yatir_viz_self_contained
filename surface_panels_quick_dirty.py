@@ -7,11 +7,42 @@ afternoon, so I'm going with copy/paste for the moment.
 
 """
 
-import panel as pn
 import geoviews_tools as gt
+import hvplot.xarray
+
+import sys
+import numpy as np
+import xarray as xr
+import panel as pn
+import pandas as pd
 
 
-def three_panel_quadmesh_compare_vertical_var(ds, varname, cmap='RdBu'):
+# gather data
+
+# use local data
+ctlday, ytrday, ctl_minus_ytr = gt.merge_yatir_fluxes_landuse(
+    fname_ctl='./ctl_d03_VWCx2_postprocessed.nc',
+    fname_yatir='./ytr_d03_VWCx2_postprocessed.nc')
+
+ds_diff = xr.concat([ctlday, ytrday, ctl_minus_ytr],
+                    dim=pd.Index(['yatir dry',
+                                  'yatir wet',
+                                  'Yatir dry - Yatir wet'],
+                                 name='WRFrun'))
+
+# make bottom_top_stag, bottom_top into coordinate variables
+ds_diff = ds_diff.assign_coords({'bottom_top_stag':
+                                 np.arange(ds_diff.dims['bottom_top_stag'])})
+ds_diff = ds_diff.assign_coords({'bottom_top':
+                                 np.arange(ds_diff.dims['bottom_top'])})
+# set 'long_name' attribute to match description
+ds = gt.set_attributes_for_plotting(ds_diff)
+
+yatir_idx = 21  # list(ds_diff['PFT'].values).index('Yatir')
+#ds_diff = ds_diff.assign(yatir_mask=ds_diff.sel(WRFrun='yatir dry')['LU_INDEX'] == yatir_idx)
+
+
+def three_panel_quadmesh_compare_vertical_var(varname, cmap='RdBu'):
     """three-panel WRF variable comparison with sliders for z, time
 
     Create a three-panel plot showing values for W vertical wind
@@ -81,6 +112,10 @@ def three_panel_quadmesh_compare_vertical_var(ds, varname, cmap='RdBu'):
         #            'hour': hour_select}
         vdim = gt.get_vdim(ds, varname)
         vmin, vmax = gt.get_min_max(ds, varname, hour_select, z_select)
+        sys.stdout.write('hour_select: {}\n'.format(hour_select))
+        sys.stdout.write('z_select: {}\n'.format(z_select))
+        sys.stdout.write('varname: {}\n'.format(varname))
+        sys.stdout.flush()
         qm = ds[varname].sel({'WRFrun': 'yatir dry',
                               'hour': hour_select,
                               vdim: z_select}).hvplot.quadmesh(
@@ -142,7 +177,7 @@ def three_panel_quadmesh_compare_vertical_var(ds, varname, cmap='RdBu'):
     return(the_plot_servable)
 
 
-def three_panel_quadmesh_compare_surface_var(ds, varname, cmap='RdBu'):
+def three_panel_quadmesh_compare_surface_var(varname, cmap='RdBu'):
     """three-panel WRF variable comparison with slider for time
 
     Create a three-panel plot showing values for a WRF variable) with
@@ -216,4 +251,8 @@ def three_panel_quadmesh_compare_surface_var(ds, varname, cmap='RdBu'):
                                 hour_select),
                          pn.Row(get_quadmesh_diff))
     the_plot_servable = the_plot.servable()
-    return(the_plot_servable)
+    sys.stdout.write('saving representation of the_plot for {} to disk\n'.format(varname))
+    sys.stdout.flush()
+    import bokeh
+    #the_plot_json = bokeh.serialize_json(the_plot.get_root())
+    return(the_plot)

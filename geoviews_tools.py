@@ -4,7 +4,7 @@
 import os
 import requests
 import xarray as xr
-
+import panel as pn
 
 def get_vdim(ds, varname):
     """find the name of the vertical dimension for an xarray variable
