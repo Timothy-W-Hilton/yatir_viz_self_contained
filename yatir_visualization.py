@@ -7,7 +7,9 @@ from rq import Queue
 from worker import conn
 import surface_panels_quick_dirty as spqd
 
-pn.pane.Markdown('''# Yatir Parameterizaton WRF results
+
+def get_intro_pgraph():
+    return(pn.pane.Markdown('''# Yatir Parameterizaton WRF results
 
 A collection of plots showing WRF-simulated surface energy and carbon
 fluxes for two different simulations of [Yatir
@@ -17,10 +19,10 @@ to a lower albedo and higher surface roughness length relative to an
 'out of the box' WRF run (in which the area is occupied by
 MODIS-derived shrubland and desert).  The 'wet' run 'irrigates' the
 forest by doubling the volumetric water content from the dry run (not
-exceeding 100%, of course).  ''').servable()
+exceeding 100%, of course).  ''').get_root())
 
-# farm out the plotting to worker processes because > 3 times out on Heroku.
-q = Queue(connection=conn)
+# # farm out the plotting to worker processes because > 3 times out on Heroku.
+# q = Queue(connection=conn)
 
 # plot_W = q.enqueue(spqd.three_panel_quadmesh_compare_vertical_var,
 #                    args=('W', 'PRGn'),
@@ -28,28 +30,28 @@ q = Queue(connection=conn)
 # plot_theta = q.enqueue(spqd.three_panel_quadmesh_compare_surface_var,
 #                        args=('HFX', 'Reds'),
 #                        job_id='HFX_plot_job')
-plot_LH = q.enqueue(spqd.three_panel_quadmesh_compare_surface_var,
-                    args=('LH', 'Blues'),
-                    job_id='LH_plot_job')
+# plot_LH = q.enqueue(spqd.three_panel_quadmesh_compare_surface_var,
+#                     args=('LH', 'Blues'),
+#                     job_id='LH_plot_job')
 
-result_lh = plot_LH.fetch('LH_plot_job', connection=conn).result
-while result_lh is None:
-    sys.stdout.write('LH not yet finished')
-    sys.stdout.flush()
-    time.sleep(2)
-    result_lh = plot_LH.fetch('LH_plot_job', connection=conn).result
+# result_lh = plot_LH.fetch('LH_plot_job', connection=conn).result
+# while result_lh is None:
+#     sys.stdout.write('LH not yet finished')
+#     sys.stdout.flush()
+#     time.sleep(2)
+#     result_lh = plot_LH.fetch('LH_plot_job', connection=conn).result
 
-nprint = 0
-while nprint < 5:
-    sys.stdout.write('LH job type ' + str(type(result_lh)))
-    sys.stdout.write('\n')
-    sys.stdout.write('LH job ~' + str(result_lh) + '~')
-    sys.stdout.write('\n')
-    sys.stdout.flush()
-    nprint = nprint + 1
+# nprint = 0
+# while nprint < 5:
+#     sys.stdout.write('LH job type ' + str(type(result_lh)))
+#     sys.stdout.write('\n')
+#     sys.stdout.write('LH job ~' + str(result_lh) + '~')
+#     sys.stdout.write('\n')
+#     sys.stdout.flush()
+#     nprint = nprint + 1
 
-time.sleep(10)
+# time.sleep(10)
 
-pn.pane.Markdown('''#After the delay
-print this stuff after the delay
-''').servable()
+# pn.pane.Markdown('''#After the delay
+# print this stuff after the delay
+# ''').servable()
