@@ -255,4 +255,4 @@ def three_panel_quadmesh_compare_surface_var(varname, cmap='RdBu'):
     sys.stdout.flush()
     import bokeh
     #the_plot_json = bokeh.serialize_json(the_plot.get_root())
-    return(the_plot)
+    return(the_plot_servable)
