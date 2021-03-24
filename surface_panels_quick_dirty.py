@@ -187,9 +187,20 @@ def three_panel_quadmesh_compare_surface_var(varname, cmap='RdBu'):
 
     """
 
+    # css_classes=["custom-slider"] implements the workaround for mangled sliders describeed here:
+    #      https://github.com/bokeh/bokeh/issues/10444
+    # The workaround also requires adding a cell to the notebook:
+    #
+    # %%html
+    # <style>
+    #     .custom-slider .bk-input-group {
+    #         height:300px;
+    #     }
+    # </style>
     hour_select = pn.widgets.IntSlider(start=0, end=23, value=13, name='Hour',
                                        orientation='vertical',
-                                       direction='rtl')
+                                       direction='rtl',
+                                       css_classes=["custom-slider"])
     z_select = None  # this is a surface variable
     # bounds for the figures in fraction of the panel,
     fig_bounds = (0.2, 0.2, 0.8, 0.8)
